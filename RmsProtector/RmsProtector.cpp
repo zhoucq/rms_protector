@@ -8,10 +8,17 @@
 #include <msdrmdefs.h>
 #include <msdrmerror.h>
 #include <strsafe.h>
-#include "defs.h"
 
-
+// 定义
 #define     DW_WAIT_RESULT      60 * 1000
+
+// 类型定义
+typedef struct Drm_Context
+{
+    HANDLE  hEvent;
+    HRESULT hr;
+    PWSTR   wszData;
+} DRM_CONTEXT, *PDRM_CONTEXT;
 
 // 回调函数
 HRESULT __stdcall
@@ -180,6 +187,7 @@ StatusCallback ( DRM_STATUS_MSG msg,
     return S_OK;
 }
 
+// 服务地址发现
 HRESULT FindServiceURL ( DRMHSESSION hClient,
                          UINT uiServiceType,
                          UINT uiServiceLocation,
@@ -314,12 +322,47 @@ e_Exit:
     return hr;
 }
 
+HRESULT GetCertificate ( DRMHSESSION hClient,
+                         UINT uiCertFlag,
+                         PWSTR *pwszCertificate )
+{
+    HRESULT         hr              = S_OK;
+    UINT            uiCertificateLength = 0;
+    BOOL            fShared         = true;
+    hr = DRMEnumerateLicense ( hClient,
+                               uiCertFlag,
+                               0,
+                               &fShared,
+                               &uiCertificateLength,
+                               NULL );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Get license failed.\n" );
+        goto e_Exit;
+    }
+    *pwszCertificate = new WCHAR[uiCertificateLength];
+    hr = DRMEnumerateLicense ( hClient,
+                               uiCertFlag,
+                               0,
+                               &fShared,
+                               &uiCertificateLength,
+                               *pwszCertificate );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Get license failed.\n" );
+        goto e_Exit;
+    }
+e_Exit:
+    return hr;
+}
 int _tmain ( int argc, _TCHAR* argv[] )
 {
-    LPWSTR          wszGroupId      = L"user1@doc.lab"; // 用户ID
+    LPWSTR          wszGroupId              = L"user1@doc.lab"; // 用户ID
     // LPWSTR          wszGroupId      = NULL; // 用户ID
-    HRESULT         hr              = S_OK;
-    DRMHSESSION     hClient         = NULL; // client session
+    HRESULT         hr                      = S_OK;
+    DRMHSESSION     hClient                 = NULL; // client session
+    PWSTR           wszMachineCertificate   = NULL; // machine cert
+    PWSTR           wszRAC                  = NULL; // user RAC
     hr = DRMCreateClientSession ( &StatusCallback,
                                   0,
                                   DRM_DEFAULTGROUPIDTYPE_WINDOWSAUTH,
@@ -330,7 +373,8 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"Create client session failed." );
         return hr;
     }
-    // 激活计算机证书
+
+    // 激活并获取计算机证书
     hr = DRMIsActivated ( hClient, DRM_ACTIVATE_MACHINE, NULL );
     if ( FAILED ( hr ) )
     {
@@ -349,7 +393,14 @@ int _tmain ( int argc, _TCHAR* argv[] )
     {
         wprintf ( L"The machine is already activated.\n" );
     }
-    // 激活用户RAC证书
+
+    hr = GetCertificate ( hClient, DRM_EL_MACHINE, &wszMachineCertificate );
+    if ( FAILED ( hr ) )
+    {
+        goto e_Exit;
+    }
+
+    // 激活并获取用户RAC证书
     hr = DRMIsActivated ( hClient, DRM_ACTIVATE_GROUPIDENTITY, NULL );
     if ( FAILED ( hr ) )
     {
@@ -369,6 +420,12 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"The user is already activated.\n" );
     }
 
+    hr = GetCertificate ( hClient, DRM_EL_SPECIFIED_GROUPIDENTITY, &wszRAC );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Get RAC failed.\n" );
+        goto e_Exit;
+    }
 e_Exit:
     return hr;
 }
