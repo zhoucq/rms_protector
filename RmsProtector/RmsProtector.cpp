@@ -322,6 +322,7 @@ e_Exit:
     return hr;
 }
 
+// Get certificate
 HRESULT GetCertificate ( DRMHSESSION hClient,
                          UINT uiCertFlag,
                          PWSTR *pwszCertificate )
@@ -355,6 +356,65 @@ HRESULT GetCertificate ( DRMHSESSION hClient,
 e_Exit:
     return hr;
 }
+
+HRESULT DoAcquireClientLicensorCertificate (
+    DRMHSESSION hClient,
+    __in PWCHAR wszLicensingSvr,
+    __deref_out PWCHAR *wszClientLicensorCert )
+{
+    HRESULT         hr              = S_OK;
+    PWSTR           wszLicensingSrv = NULL;
+    DRM_CONTEXT     context;
+    DWORD           dwWaitResult;
+    hr = FindServiceURL ( hClient,
+                          DRM_SERVICE_TYPE_CLIENTLICENSOR,
+                          DRM_SERVICE_LOCATION_ENTERPRISE,
+                          &wszLicensingSrv );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Find service url failed." );
+        goto e_Exit;
+    }
+
+    if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
+    {
+        hr = GetLastError();
+        wprintf ( L"Create event failed with an unexcepted error: 0x%x", hr );
+        goto e_Exit;
+    }
+
+    hr = DRMAcquireLicense ( hClient,
+                             NULL,
+                             NULL,
+                             NULL,
+                             NULL,
+                             wszLicensingSrv,
+                             ( VOID* ) &context );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Acquire license failed.\n" );
+        goto e_Exit;
+    }
+    dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
+    if ( dwWaitResult == DW_WAIT_RESULT )
+    {
+        hr = ERROR_TIMEOUT;
+        wprintf ( L"Acquire license timed out.\n" );
+        goto e_Exit;
+    }
+    if ( FAILED ( context.hr ) )
+    {
+        hr = context.hr;
+        wprintf ( L"Acquire license failed. Callback function returned a failure code: 0x%x", hr );
+        goto e_Exit;
+    }
+e_Exit:
+    if ( NULL != context.hEvent )
+    {
+        CloseHandle ( context.hEvent );
+    }
+    return hr;
+}
 int _tmain ( int argc, _TCHAR* argv[] )
 {
     LPWSTR          wszGroupId              = L"user1@doc.lab"; // ÓÃ»§ID
@@ -362,7 +422,9 @@ int _tmain ( int argc, _TCHAR* argv[] )
     HRESULT         hr                      = S_OK;
     DRMHSESSION     hClient                 = NULL; // client session
     PWSTR           wszMachineCertificate   = NULL; // machine cert
-    PWSTR           wszRAC                  = NULL; // user RAC
+    PWSTR           wszRAC                  = NULL; // RAC
+    PWSTR           wszClientLicensorCert   = NULL; // Client licensor cert
+	PWSTR			wszLicenseServerUrl     = NULL;
     hr = DRMCreateClientSession ( &StatusCallback,
                                   0,
                                   DRM_DEFAULTGROUPIDTYPE_WINDOWSAUTH,
@@ -426,6 +488,22 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"Get RAC failed.\n" );
         goto e_Exit;
     }
+
+    hr = GetCertificate ( hClient, DRM_EL_SPECIFIED_CLIENTLICENSOR, &wszClientLicensorCert );
+    if ( FAILED ( hr ) )
+    {
+        if ( E_DRM_NO_MORE_DATA != hr )
+        {
+            wprintf ( L"Get CLC failed with an unexcepted error: 0x%x", hr );
+            goto e_Exit;
+        }
+        else
+        {
+			 
+        }
+
+    }
+
 e_Exit:
     return hr;
 }
