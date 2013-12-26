@@ -15,9 +15,9 @@ HRESULT GetCertificate ( DRMHSESSION hClient,
                          UINT uiCertFlag,
                          PWSTR *pwszCertificate )
 {
-    HRESULT         hr              = S_OK;
-    UINT            uiCertificateLength = 0;
-    BOOL            fShared         = true;
+    HRESULT             hr                      = S_OK;
+    UINT                uiCertificateLength     = 0;
+    BOOL                fShared                 = true;
     hr = DRMEnumerateLicense ( hClient,
                                uiCertFlag,
                                0,
@@ -115,6 +115,11 @@ int _tmain ( int argc, _TCHAR* argv[] )
     PWSTR           wszManifest                     = NULL; // manifestÎÄ¼þ
     UINT            uiSecurityProviderTypeLength    = 0;
     UINT            uiSecurityProviderPathLength    = 0;
+    PWSTR           wszSecurityProviderType         = NULL;
+    PWSTR           wszSecurityProviderPath         = NULL;
+    DRMENVHANDLE    hEnv                            = NULL;
+    DRMHANDLE       hLib                            = NULL;
+    DRMHANDLE       hIssuanceLicense                = NULL;
     hr = DRMCreateClientSession ( &StatusCallback,
                                   0,
                                   DRM_DEFAULTGROUPIDTYPE_WINDOWSAUTH,
@@ -226,6 +231,63 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"\nDRMGetSecurityProvider failed. hr = 0x%x\n", hr );
         goto e_Exit;
     }
+    wszSecurityProviderType = new WCHAR[ uiSecurityProviderTypeLength ];
+    if ( NULL == wszSecurityProviderType )
+    {
+        wprintf ( L"\nMemory allocation for wszSecurityProviderType "\
+                  L"failed.\n" );
+        hr = E_OUTOFMEMORY;
+        goto e_Exit;
+    }
+
+    wszSecurityProviderPath = new WCHAR[ uiSecurityProviderPathLength ];
+    if ( NULL == wszSecurityProviderPath )
+    {
+        wprintf ( L"\nMemory allocation for wszSecurityProviderPath "\
+                  L"failed." );
+        hr = E_OUTOFMEMORY;
+        goto e_Exit;
+    }
+
+    hr = DRMGetSecurityProvider ( 0,
+                                  &uiSecurityProviderTypeLength,
+                                  wszSecurityProviderType,
+                                  &uiSecurityProviderPathLength,
+                                  wszSecurityProviderPath );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"\nDRMGetSecurityProvider failed. hr = 0x%x\n", hr );
+        goto e_Exit;
+    }
+
+    // Initialize an environment
+    hr = DRMInitEnvironment ( DRMSECURITYPROVIDERTYPE_SOFTWARESECREP,
+                              DRMSPECTYPE_FILENAME,
+                              wszSecurityProviderPath,
+                              wszManifest,
+                              wszMachineCertificate,
+                              &hEnv,
+                              &hLib );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"\nDRMInitEnvironment failed. hr = 0x%x.\n", hr );
+        goto e_Exit;
+    }
+
+    // create an unsigned IL from scratch
+    hr = DRMCreateIssuanceLicense ( NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    &hIssuanceLicense );
+    if ( FAILED ( hr ) )
+    {
+        goto e_Exit;
+    }
+
 e_Exit:
     return hr;
 }

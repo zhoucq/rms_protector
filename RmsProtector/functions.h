@@ -7,9 +7,6 @@
 #include <msdrmerror.h>
 #include <strsafe.h>
 
-// 定义
-#define     DW_WAIT_RESULT      60 * 1000
-
 // 类型定义
 typedef struct Drm_Context
 {
@@ -17,6 +14,11 @@ typedef struct Drm_Context
     HRESULT hr;
     PWSTR   wszData;
 } DRM_CONTEXT, *PDRM_CONTEXT;
+
+// UTILS
+// Convert String To SYSTEMTIME
+BOOL ConvertStringToSystemTime ( PWSTR pwszTimeString,
+                                 SYSTEMTIME *stTime );
 
 // 回调函数
 HRESULT __stdcall
@@ -39,4 +41,15 @@ HRESULT DoMachineActivation ( DRMHSESSION hClient );
 
 // Activate User
 HRESULT DoUserActivation ( DRMHSESSION hClient );
+
+// 首先创建Unsigned IL，添加用户权限后，使用CLC进行签署
+HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
+                             DRMHANDLE hLib,
+                             PWSTR pwszUserID,
+                             PWSTR pwszMachineCert,
+                             PWSTR pwszCLC,
+                             PWSTR pwszManifest,
+                             PWSTR *ppwszGUID,
+                             DRMPUBHANDLE *phIssuanceLic,
+                             PWSTR *ppwszSignedIL );
 #endif

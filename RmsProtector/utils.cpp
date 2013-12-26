@@ -1,6 +1,21 @@
 #include "stdafx.h"
 #include "functions.h"
 
+BOOL ConvertStringToSystemTime ( PWSTR pwszTimeString,
+                                 SYSTEMTIME *pstTime )
+{
+    SecureZeroMemory ( pstTime, sizeof ( SYSTEMTIME ) );
+    int ret = swscanf_s ( pwszTimeString,
+                          L"%d-%d-%d %d:%d:%d",
+                          pstTime->wYear,
+                          pstTime->wMonth,
+                          pstTime->wDay,
+                          pstTime->wHour,
+                          pstTime->wMinute,
+                          pstTime->wSecond );
+    return ret;
+}
+
 // 以Unicode编码读取manifest文件
 HRESULT ReadManifestToWideString ( PWSTR *pwszFileString )
 {
