@@ -45,4 +45,5 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                              PWSTR *ppwszGUID,
                              DRMPUBHANDLE *phIssuanceLic,
                              PWSTR *ppwszSignedIL );
+
 #endif

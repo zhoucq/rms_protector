@@ -4,15 +4,22 @@
 BOOL ConvertStringToSystemTime ( PWSTR pwszTimeString,
                                  SYSTEMTIME *pstTime )
 {
+    UINT wYear, wMonth, wDay, wHour, wMinute, wSecond;
     SecureZeroMemory ( pstTime, sizeof ( SYSTEMTIME ) );
     int ret = swscanf_s ( pwszTimeString,
                           L"%d-%d-%d %d:%d:%d",
-                          pstTime->wYear,
-                          pstTime->wMonth,
-                          pstTime->wDay,
-                          pstTime->wHour,
-                          pstTime->wMinute,
-                          pstTime->wSecond );
+                          &wYear,
+                          &wMonth,
+                          &wDay,
+                          &wHour,
+                          &wMinute,
+                          &wSecond );
+    pstTime->wYear = wYear;
+    pstTime->wMonth = wMonth;
+    pstTime->wDay = wDay;
+    pstTime->wHour = wHour;
+    pstTime->wMinute = wMinute;
+    pstTime->wSecond = wSecond;
     return ret;
 }
 

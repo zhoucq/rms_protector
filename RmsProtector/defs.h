@@ -10,4 +10,5 @@ typedef struct Drm_Context
     HRESULT hr;
     PWSTR   wszData;
 } DRM_CONTEXT, *PDRM_CONTEXT;
+
 #endif

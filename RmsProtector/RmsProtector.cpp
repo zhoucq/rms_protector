@@ -104,6 +104,7 @@ e_Exit:
 
 int _tmain ( int argc, _TCHAR* argv[] )
 {
+
     LPWSTR          wszGroupId                      = L"user1@doc.lab"; // 用户ID
     // LPWSTR          wszGroupId      = NULL; // 用户ID
     HRESULT         hr                              = S_OK;
