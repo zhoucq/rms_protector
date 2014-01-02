@@ -220,7 +220,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"\nDRMGetSecurityProvider failed. hr = 0x%x\n", hr );
         goto e_Exit;
     }
-    wprintf ( L"Start init environment\n" );
+
     // Initialize an environment
     hr = DRMInitEnvironment ( DRMSECURITYPROVIDERTYPE_SOFTWARESECREP,
                               DRMSPECTYPE_FILENAME,
@@ -234,7 +234,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"\nDRMInitEnvironment failed. hr = 0x%x.\n", hr );
         goto e_Exit;
     }
-    wprintf ( L"DRMInitEnviroment succeed.\n" );
+
 
 
 

@@ -17,6 +17,8 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
     DRMPUBHANDLE            hIssuanceLic;
     GUID                    guid;
     UINT                    uiGUIDLength;
+    DRMPUBHANDLE            hUser           = NULL;
+    DRMPUBHANDLE            hRight          = NULL;
 
     /* if ( NULL != pwszTimeFrom )
     {
@@ -66,11 +68,12 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
     // TODO: 这里需要测试
     hr = DRMSetMetaData ( hIssuanceLic,
                           *ppwszGUID,
-                          L"",
-                          L"",
-                          L"",
-                          L"",
-                          L"" );
+                          L"MSGUID",
+                          NULL,     // SKU ID
+                          NULL,     // SKU ID TYPE
+                          NULL,     // Content Type
+                          NULL      // Content Name
+                        );
     if ( FAILED ( hr ) )
     {
         wprintf ( L"DRMSetMetaData failed: 0x%x\n", hr );
@@ -103,6 +106,34 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
              NULL,                              // Pointer to the digest
              NULL );                            // Digest length
     if ( FAILED ( hr ) ) goto e_Exit;
+
+    hr = DRMCreateUser ( pwszUserID, NULL, L"Windows", &hUser );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
+    hr = DRMCreateRight ( L"Owner",
+                          NULL,
+                          NULL,
+                          0,
+                          NULL,
+                          NULL,
+                          &hRight );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
+    hr = DRMAddRightWithUser ( hIssuanceLic, hRight, hUser );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
 e_Exit:
+    if ( NULL != hUser )
+    {
+        CloseHandle ( &hUser );
+    }
+    if ( NULL != hRight )
+    {
+        CloseHandle ( &hRight );
+    }
+    if ( NULL != hIssuanceLic )
+    {
+        CloseHandle ( &hIssuanceLic );
+    }
     return hr;
 }
