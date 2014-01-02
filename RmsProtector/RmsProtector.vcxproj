@@ -87,8 +87,10 @@
     <ClInclude Include="tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AcquireLicense.cpp" />
     <ClCompile Include="Activation.cpp" />
     <ClCompile Include="FindServiceUrl.cpp" />
+    <ClCompile Include="GetCertificate.cpp" />
     <ClCompile Include="GetOfflineSignedIL.cpp" />
     <ClCompile Include="RmsProtector.cpp" />
     <ClCompile Include="StatusCallback.cpp" />

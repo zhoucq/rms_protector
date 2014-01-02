@@ -3,6 +3,9 @@
 
 // 头文件
 #include "stdafx.h"
+#include <string>
+#include <iostream>
+#include <algorithm>
 #include <Windows.h>
 #include <msdrm.h>
 #include <msdrmdefs.h>
@@ -10,103 +13,50 @@
 #include <strsafe.h>
 #include "functions.h"
 
-// Get certificate
-HRESULT GetCertificate ( DRMHSESSION hClient,
-                         UINT uiCertFlag,
-                         PWSTR *pwszCertificate )
+using namespace std;
+
+
+WCHAR* getCmdOption ( WCHAR** begin, WCHAR** end, const std::wstring & option )
 {
-    HRESULT             hr                      = S_OK;
-    UINT                uiCertificateLength     = 0;
-    BOOL                fShared                 = true;
-    hr = DRMEnumerateLicense ( hClient,
-                               uiCertFlag,
-                               0,
-                               &fShared,
-                               &uiCertificateLength,
-                               NULL );
-    if ( FAILED ( hr ) )
+    WCHAR ** itr = std::find ( begin, end, option );
+    if ( itr != end && ++itr != end )
     {
-        goto e_Exit;
+        return *itr;
     }
-    *pwszCertificate = new WCHAR[uiCertificateLength];
-    hr = DRMEnumerateLicense ( hClient,
-                               uiCertFlag,
-                               0,
-                               &fShared,
-                               &uiCertificateLength,
-                               *pwszCertificate );
-    if ( FAILED ( hr ) )
-    {
-        goto e_Exit;
-    }
-e_Exit:
-    return hr;
+    return 0;
 }
 
-HRESULT DoAcquireClientLicensorCertificate (
-    DRMHSESSION hClient,
-    PWSTR wszLicensingSvr,
-    PWSTR *wszClientLicensorCert )
+bool cmdOptionExists ( WCHAR** begin, WCHAR** end, const std::wstring & option )
 {
-    HRESULT         hr              = S_OK;
-    PWSTR           wszLicensingSrv = NULL;
-    DRM_CONTEXT     context;
-    DWORD           dwWaitResult;
-    hr = FindServiceURL ( hClient,
-                          DRM_SERVICE_TYPE_CLIENTLICENSOR,
-                          DRM_SERVICE_LOCATION_ENTERPRISE,
-                          &wszLicensingSrv );
-    if ( FAILED ( hr ) )
-    {
-        wprintf ( L"Find service url failed." );
-        goto e_Exit;
-    }
-
-    if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
-    {
-        hr = GetLastError();
-        wprintf ( L"Create event failed with an unexcepted error: 0x%x", hr );
-        goto e_Exit;
-    }
-
-    hr = DRMAcquireLicense ( hClient,
-                             NULL,
-                             NULL,
-                             NULL,
-                             NULL,
-                             wszLicensingSrv,
-                             ( VOID* ) &context );
-    if ( FAILED ( hr ) )
-    {
-        wprintf ( L"Acquire license failed.\n" );
-        goto e_Exit;
-    }
-    dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
-    if ( dwWaitResult == DW_WAIT_RESULT )
-    {
-        hr = ERROR_TIMEOUT;
-        wprintf ( L"Acquire license timed out.\n" );
-        goto e_Exit;
-    }
-    if ( FAILED ( context.hr ) )
-    {
-        hr = context.hr;
-        wprintf ( L"Acquire license failed. Callback function returned a failure code: 0x%x", hr );
-        goto e_Exit;
-    }
-e_Exit:
-    if ( NULL != context.hEvent )
-    {
-        CloseHandle ( context.hEvent );
-    }
-    return hr;
+    WCHAR ** itr =  std::find ( begin, end, option );
+    return std::find ( begin, end, option ) != end;
 }
+
 
 int _tmain ( int argc, _TCHAR* argv[] )
 {
+    // TODO: 需要一个ParseArguments方法
+    // parse arguments
+    PWSTR           pwszOptTimeStart                = NULL;
+    PWSTR           pwszOptTimeUntil                = NULL;
+    PWSTR           pwszOptRights                   = NULL;
+    PWSTR           pwszOptInput                    = NULL;
+    PWSTR           pwszOptOutput                   = NULL;
+
+    pwszOptTimeStart = getCmdOption ( argv, argv + argc, L"-start" );
+    pwszOptTimeUntil = getCmdOption ( argv, argv + argc, L"-until" );
+    pwszOptRights = getCmdOption ( argv, argv + argc, L"-rights" );
+    pwszOptInput = getCmdOption ( argv, argv + argc, L"-input" );
+    pwszOptOutput = getCmdOption ( argv, argv + argc, L"-output" );
+
+    // TODO: arguments check
+    //if ( NULL != pwszOptTimeStart )
+    //{
+    //}
+
 
     LPWSTR          wszGroupId                      = L"user1@doc.lab"; // 用户ID
-    // LPWSTR          wszGroupId      = NULL; // 用户ID
+    // LPWSTR          wszGroupId                   = NULL; // 用户ID
     HRESULT         hr                              = S_OK;
     DRMHSESSION     hClient                         = NULL; // client session
     PWSTR           wszMachineCertificate           = NULL; // machine cert
@@ -121,6 +71,8 @@ int _tmain ( int argc, _TCHAR* argv[] )
     DRMENVHANDLE    hEnv                            = NULL;
     DRMHANDLE       hLib                            = NULL;
     DRMHANDLE       hIssuanceLicense                = NULL;
+    PWSTR           pwszGuid                        = NULL;
+    PWSTR           pwszSignedIL                    = NULL;
     hr = DRMCreateClientSession ( &StatusCallback,
                                   0,
                                   DRM_DEFAULTGROUPIDTYPE_WINDOWSAUTH,
@@ -275,21 +227,24 @@ int _tmain ( int argc, _TCHAR* argv[] )
         goto e_Exit;
     }
 
-    // create an unsigned IL from scratch
-    hr = DRMCreateIssuanceLicense ( NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    &hIssuanceLicense );
+
+
+    hr = GetOfflineSignedIL ( hEnv,
+                              hLib,
+                              wszGroupId,
+                              wszMachineCertificate,
+                              wszClientLicensorCert,
+                              wszManifest,
+                              &pwszGuid,
+                              &hIssuanceLicense,
+                              &pwszSignedIL );
     if ( FAILED ( hr ) )
     {
         goto e_Exit;
     }
 
 e_Exit:
+    wprintf ( L"Return Code:0x%x", hr );
     return hr;
 }
 

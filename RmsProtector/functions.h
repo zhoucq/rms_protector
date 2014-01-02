@@ -35,6 +35,18 @@ HRESULT DoMachineActivation ( DRMHSESSION hClient );
 // Activate User
 HRESULT DoUserActivation ( DRMHSESSION hClient );
 
+// Get certificate
+HRESULT GetCertificate ( DRMHSESSION hClient,
+                         UINT uiCertFlag,
+                         PWSTR *pwszCertificate );
+
+// TODO: 合并依赖DRMAcquire的方法
+// Acquire CLC
+HRESULT
+DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
+                                     PWSTR wszLicensingSvr,
+                                     PWSTR *wszClientLicensorCert );
+
 // 首先创建Unsigned IL，添加用户权限后，使用CLC进行签署
 HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                              DRMHANDLE hLib,
