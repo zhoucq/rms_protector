@@ -91,6 +91,10 @@ int _tmain ( int argc, _TCHAR* argv[] )
         if ( hr == E_DRM_NEEDS_MACHINE_ACTIVATION )
         {
             hr = DoMachineActivation ( hClient );
+            if ( FAILED ( hr ) )
+            {
+                goto e_Exit;
+            }
         }
         else
         {
@@ -117,6 +121,10 @@ int _tmain ( int argc, _TCHAR* argv[] )
         if ( E_DRM_NEEDS_GROUPIDENTITY_ACTIVATION == hr )
         {
             hr = DoUserActivation ( hClient );
+            if ( FAILED ( hr ) )
+            {
+                goto e_Exit;
+            }
         }
         else
         {
@@ -212,7 +220,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"\nDRMGetSecurityProvider failed. hr = 0x%x\n", hr );
         goto e_Exit;
     }
-
+    wprintf ( L"Start init environment\n" );
     // Initialize an environment
     hr = DRMInitEnvironment ( DRMSECURITYPROVIDERTYPE_SOFTWARESECREP,
                               DRMSPECTYPE_FILENAME,
@@ -226,6 +234,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         wprintf ( L"\nDRMInitEnvironment failed. hr = 0x%x.\n", hr );
         goto e_Exit;
     }
+    wprintf ( L"DRMInitEnviroment succeed.\n" );
 
 
 

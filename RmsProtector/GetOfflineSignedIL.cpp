@@ -46,6 +46,7 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                                     &hIssuanceLic );
     if ( FAILED ( hr ) )
     {
+        wprintf ( L"DRMCreateIssuanceLicense failed: 0x%x\n", hr );
         goto e_Exit;
     }
 
@@ -72,6 +73,7 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                           L"" );
     if ( FAILED ( hr ) )
     {
+        wprintf ( L"DRMSetMetaData failed: 0x%x\n", hr );
         goto e_Exit;
     }
 
