@@ -65,5 +65,11 @@
     <ClCompile Include="AcquireLicense.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GetOnlineSignedIL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetUnsignedIL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
