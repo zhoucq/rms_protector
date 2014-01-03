@@ -41,6 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -58,6 +60,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>msdrm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+      <TreatOutputAsContent>
+      </TreatOutputAsContent>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -92,6 +104,8 @@
     <ClCompile Include="FindServiceUrl.cpp" />
     <ClCompile Include="GetCertificate.cpp" />
     <ClCompile Include="GetOfflineSignedIL.cpp" />
+    <ClCompile Include="GetOnlineSignedIL.cpp" />
+    <ClCompile Include="GetUnsignedIL.cpp" />
     <ClCompile Include="RmsProtector.cpp" />
     <ClCompile Include="StatusCallback.cpp" />
     <ClCompile Include="stdafx.cpp">

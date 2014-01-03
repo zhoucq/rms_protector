@@ -19,6 +19,11 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
     UINT                    uiGUIDLength;
     DRMPUBHANDLE            hUser           = NULL;
     DRMPUBHANDLE            hRight          = NULL;
+    DRM_CONTEXT             context;
+    DWORD                   dwWaitResult    = 0;
+    PWSTR                   pwszLicensingSvr    = NULL;
+
+    SecureZeroMemory ( &context, sizeof ( DRM_CONTEXT ) );
 
     /* if ( NULL != pwszTimeFrom )
     {
@@ -65,7 +70,6 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
         goto e_Exit;
     }
 
-    // TODO: 这里需要测试
     hr = DRMSetMetaData ( hIssuanceLic,
                           *ppwszGUID,
                           L"MSGUID",
@@ -122,6 +126,27 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
     hr = DRMAddRightWithUser ( hIssuanceLic, hRight, hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
 
+
+
+    context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL );
+    hr = DRMGetSignedIssuanceLicense ( hEnv,
+                                       hIssuanceLic,
+                                       DRM_SIGN_OFFLINE |
+                                       DRM_AUTO_GENERATE_KEY,
+                                       NULL,
+                                       0,
+                                       L"AES",
+                                       NULL,
+                                       &StatusCallback,
+                                       pwszCLC,
+                                       &context );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
+    dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
+    if ( WAIT_TIMEOUT == dwWaitResult || FAILED ( context.hr ) ) goto e_Exit;
+
+    *ppwszSignedIL = context.wszData;
+
 e_Exit:
     if ( NULL != hUser )
     {
@@ -134,6 +159,11 @@ e_Exit:
     if ( NULL != hIssuanceLic )
     {
         CloseHandle ( &hIssuanceLic );
+    }
+    if ( NULL != context.hEvent )
+    {
+        CloseHandle ( context.hEvent );
+        SecureZeroMemory ( &context, sizeof ( context ) );
     }
     return hr;
 }
