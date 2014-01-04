@@ -2,7 +2,8 @@
 #include "functions.h"
 
 HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
-                            PWSTR wszLicensingSrv )
+                            PWSTR wszLicensingSrv,
+                            PWSTR *pwszSignedIL )
 {
     HRESULT                 hr                  = S_OK;
     DRM_CONTEXT             context;
@@ -41,6 +42,9 @@ HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
         hr = context.hr;
         goto e_Exit;
     }
+    *pwszSignedIL = context.wszData;
+    wprintf ( L"Online SignedIL: \n%s\n", *pwszSignedIL );
+
 
 e_Exit:
     return hr;

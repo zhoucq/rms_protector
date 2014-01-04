@@ -47,7 +47,7 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
                                      PWSTR wszLicensingSvr,
                                      PWSTR *wszClientLicensorCert );
 
-// 首先创建Unsigned IL，添加用户权限后，使用CLC进行签署
+// 首先创建Unsigned IL，添加用户权限后，使用CLC进行离线签署
 HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                              DRMHANDLE hLib,
                              PWSTR pwszUserID,
@@ -58,4 +58,13 @@ HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
                              DRMPUBHANDLE *phIssuanceLic,
                              PWSTR *ppwszSignedIL );
 
+// 生成Unsigned IL
+HRESULT GetUnsignedIL ( PWSTR wszUserName,
+                        PWSTR *ppwszGUID,
+                        DRMPUBHANDLE *phIssuanceLic );
+
+// 连线签署IL
+HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
+                            PWSTR wszLicensingSrv ,
+                            PWSTR *pwszSignedIL );
 #endif

@@ -63,6 +63,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
     PWSTR           wszRAC                          = NULL; // RAC
     PWSTR           wszClientLicensorCert           = NULL; // Client licensor cert
     PWSTR           wszCLCServiceUrl                = NULL;
+    PWSTR           pwszLicensingSrv                 = NULL;
     PWSTR           wszManifest                     = NULL; // manifestÎÄ¼þ
     UINT            uiSecurityProviderTypeLength    = 0;
     UINT            uiSecurityProviderPathLength    = 0;
@@ -235,9 +236,19 @@ int _tmain ( int argc, _TCHAR* argv[] )
         goto e_Exit;
     }
 
+    hr = GetUnsignedIL ( wszGroupId, &pwszGuid, &hIssuanceLicense );
+    if ( FAILED ( hr ) ) goto e_Exit;
 
+    hr = FindServiceURL (
+             hClient,                            // Client handle
+             DRM_SERVICE_TYPE_PUBLISHING,        // Type of service
+             DRM_SERVICE_LOCATION_ENTERPRISE,    // Location of service
+             &pwszLicensingSrv );                // Service URL
+    wprintf ( L"Licensing Service URL: %s\n", pwszLicensingSrv );
 
+    hr = GetOnlineSignedIL ( hIssuanceLicense, pwszLicensingSrv , &pwszSignedIL );
 
+    /*
     hr = GetOfflineSignedIL ( hEnv,
                               hLib,
                               wszGroupId,
@@ -251,7 +262,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
     {
         goto e_Exit;
     }
-
+    */
 e_Exit:
     wprintf ( L"Return Code:0x%x", hr );
     return hr;
