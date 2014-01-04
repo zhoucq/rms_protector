@@ -20,7 +20,7 @@ HRESULT DoMachineActivation ( DRMHSESSION hClient )
     if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
     {
         wprintf ( L"Create event failed.\n" );
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
 
@@ -81,7 +81,7 @@ HRESULT DoUserActivation ( DRMHSESSION hClient )
     SecureZeroMemory ( &context, sizeof ( DRM_CONTEXT ) );
     if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         wprintf ( L"Create event failed with an unexcepted error: 0x%x\n", hr );
         goto e_Exit;
     }

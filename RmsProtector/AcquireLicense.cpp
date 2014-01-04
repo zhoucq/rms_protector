@@ -22,7 +22,7 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
 
     if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         wprintf ( L"Create event failed with an unexcepted error: 0x%x", hr );
         goto e_Exit;
     }

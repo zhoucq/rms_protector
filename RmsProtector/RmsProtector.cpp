@@ -99,7 +99,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         }
         else
         {
-            hr = GetLastError();
+            hr = GetLastHR();
             wprintf ( L"Activate machine failed with an unexcepted error: 0x%x", hr );
             goto e_Exit;
         }
@@ -129,7 +129,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         }
         else
         {
-            hr = GetLastError();
+            hr = GetLastHR();
             wprintf ( L"Activate user failed with an unexcepted error: 0x%x\n", hr );
             goto e_Exit;
         }

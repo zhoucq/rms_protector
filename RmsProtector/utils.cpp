@@ -34,7 +34,7 @@ HRESULT ReadManifestToWideString ( PWSTR *pwszFileString )
     // 获取Manifest文件名
     if ( !GetModuleFileName ( NULL , wcFilePath, MAX_PATH ) )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
     hr = StringCchCat ( wcFilePath, MAX_PATH, L".xml" );
@@ -46,19 +46,19 @@ HRESULT ReadManifestToWideString ( PWSTR *pwszFileString )
     hFile = CreateFileW ( wcFilePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL );
     if ( INVALID_HANDLE_VALUE == hFile )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
 
     if ( 0 == GetFileInformationByHandle ( hFile, &fileInfo ) )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
     *pwszFileString = new WCHAR[fileInfo.nFileIndexLow + sizeof ( WCHAR )];
     if ( 0 == ReadFile ( hFile, *pwszFileString, fileInfo.nFileSizeLow, &dwBytesRead, 0 ) )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
 

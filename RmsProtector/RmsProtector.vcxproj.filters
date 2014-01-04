@@ -69,7 +69,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="Readme.md" />
-  </ItemGroup>
 </Project>

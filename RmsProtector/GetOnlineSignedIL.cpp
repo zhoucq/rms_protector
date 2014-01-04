@@ -15,7 +15,7 @@ HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
                                    NULL );
     if ( NULL == context.hEvent )
     {
-        hr = GetLastError();
+        hr = GetLastHR();
         goto e_Exit;
     }
 
