@@ -36,27 +36,37 @@ HRESULT GetUnsignedIL ( PWSTR wszUserName,
         goto e_Exit;
     }
 
+    // 设置MetaData
     hr = DRMSetMetaData ( *phIssuanceLic,
                           *ppwszGUID,
                           L"MS-GUID",
                           NULL,     // SKU ID
                           NULL,     // SKU ID TYPE
                           NULL,     // Content Type
-                          NULL      // Content Name
-                        );
+                          NULL );   // Content Name
+
     if ( FAILED ( hr ) ) goto e_Exit;
 
+    // 创建User
     hr = DRMCreateUser ( wszUserName, NULL, L"Unspecified", &hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
 
+    // 创建Right
     hr = DRMCreateRight ( L"EDIT", NULL, NULL, 0, NULL, NULL, &hRight );
     if ( FAILED ( hr ) ) goto e_Exit;
 
+    // 将User和Right加到IL中
     hr = DRMAddRightWithUser ( *phIssuanceLic, hRight, hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
 
-
-
 e_Exit:
+    if ( NULL != hUser )
+    {
+        CloseHandle ( &hUser );
+    }
+    if ( NULL != hRight )
+    {
+        CloseHandle ( &hRight );
+    }
     return hr;
 }
