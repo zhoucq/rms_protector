@@ -158,10 +158,10 @@ int _tmain ( int argc, _TCHAR* argv[] )
         }
         else
         {
-            hr = FindServiceURL ( hClient,
-                                  DRM_SERVICE_TYPE_CLIENTLICENSOR,
-                                  DRM_SERVICE_LOCATION_ENTERPRISE,
-                                  &wszCLCServiceUrl );
+            hr = GetServiceLocation ( hClient,
+                                      DRM_SERVICE_TYPE_CLIENTLICENSOR,
+                                      DRM_SERVICE_LOCATION_ENTERPRISE,
+                                      &wszCLCServiceUrl );
             if ( FAILED ( hr ) )
             {
                 wprintf ( L"Find CLC service url failed. Error code: 0x%x", hr );
@@ -239,7 +239,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
     hr = GetUnsignedIL ( wszGroupId, &pwszGuid, &hIssuanceLicense );
     if ( FAILED ( hr ) ) goto e_Exit;
 
-    hr = FindServiceURL (
+    hr = GetServiceLocation (
              hClient,                            // Client handle
              DRM_SERVICE_TYPE_PUBLISHING,        // Type of service
              DRM_SERVICE_LOCATION_ENTERPRISE,    // Location of service

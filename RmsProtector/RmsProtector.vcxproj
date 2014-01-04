@@ -101,7 +101,7 @@
   <ItemGroup>
     <ClCompile Include="AcquireLicense.cpp" />
     <ClCompile Include="Activation.cpp" />
-    <ClCompile Include="FindServiceUrl.cpp" />
+    <ClCompile Include="GetServiceLocation.cpp" />
     <ClCompile Include="GetCertificate.cpp" />
     <ClCompile Include="GetOfflineSignedIL.cpp" />
     <ClCompile Include="GetOnlineSignedIL.cpp" />

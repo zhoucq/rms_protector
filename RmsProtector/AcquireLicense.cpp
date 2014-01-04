@@ -10,10 +10,10 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
     PWSTR           wszLicensingSrv = NULL;
     DRM_CONTEXT     context;
     DWORD           dwWaitResult;
-    hr = FindServiceURL ( hClient,
-                          DRM_SERVICE_TYPE_CLIENTLICENSOR,
-                          DRM_SERVICE_LOCATION_ENTERPRISE,
-                          &wszLicensingSrv );
+    hr = GetServiceLocation ( hClient,
+                              DRM_SERVICE_TYPE_CLIENTLICENSOR,
+                              DRM_SERVICE_LOCATION_ENTERPRISE,
+                              &wszLicensingSrv );
     if ( FAILED ( hr ) )
     {
         wprintf ( L"Find service url failed." );

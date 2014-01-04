@@ -67,10 +67,10 @@ HRESULT DoUserActivation ( DRMHSESSION hClient )
     DRM_ACTSERV_INFO *pdasi         = NULL;
     DRM_CONTEXT     context;
     DWORD           dwWaitResult    = 0;
-    hr = FindServiceURL ( hClient,
-                          DRM_SERVICE_TYPE_ACTIVATION,
-                          DRM_SERVICE_LOCATION_ENTERPRISE,
-                          &wszServiceUrl );
+    hr = GetServiceLocation ( hClient,
+                              DRM_SERVICE_TYPE_ACTIVATION,
+                              DRM_SERVICE_LOCATION_ENTERPRISE,
+                              &wszServiceUrl );
     if ( FAILED ( hr ) )
     {
         goto e_Exit;

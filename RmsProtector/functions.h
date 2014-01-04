@@ -24,10 +24,10 @@ StatusCallback ( DRM_STATUS_MSG msg,
 HRESULT ReadManifestToWideString ( PWSTR *pwszFileString );
 
 // 服务地址发现
-HRESULT FindServiceURL ( DRMHSESSION hClient,
-                         UINT uiServiceType,
-                         UINT uiServiceLocation,
-                         PWSTR *pwszServiceUrl );
+HRESULT GetServiceLocation ( DRMHSESSION hClient,
+                             UINT uiServiceType,
+                             UINT uiServiceLocation,
+                             PWSTR *pwszServiceUrl );
 
 // Activate machine
 HRESULT DoMachineActivation ( DRMHSESSION hClient );
