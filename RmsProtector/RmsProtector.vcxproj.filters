@@ -70,6 +70,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe" />
+    <Text Include="Readme.md" />
   </ItemGroup>
 </Project>
