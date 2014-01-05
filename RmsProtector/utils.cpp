@@ -55,7 +55,7 @@ HRESULT ReadManifestToWideString ( PWSTR *pwszFileString )
         hr = GetLastHR();
         goto e_Exit;
     }
-    *pwszFileString = new WCHAR[fileInfo.nFileIndexLow + sizeof ( WCHAR )];
+    *pwszFileString = new WCHAR[fileInfo.nFileSizeLow + sizeof ( WCHAR )];
     if ( 0 == ReadFile ( hFile, *pwszFileString, fileInfo.nFileSizeLow, &dwBytesRead, 0 ) )
     {
         hr = GetLastHR();

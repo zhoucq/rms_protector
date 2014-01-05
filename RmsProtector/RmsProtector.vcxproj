@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="AcquireLicense.cpp" />
     <ClCompile Include="Activation.cpp" />
+    <ClCompile Include="EncryptContent.cpp" />
     <ClCompile Include="GetServiceLocation.cpp" />
     <ClCompile Include="GetCertificate.cpp" />
     <ClCompile Include="GetOfflineSignedIL.cpp" />

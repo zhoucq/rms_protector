@@ -247,6 +247,12 @@ int _tmain ( int argc, _TCHAR* argv[] )
     wprintf ( L"Licensing Service URL: %s\n", pwszLicensingSrv );
 
     hr = GetOnlineSignedIL ( hIssuanceLicense, pwszLicensingSrv , &pwszSignedIL );
+    if ( FAILED ( hr ) )
+    {
+        wprintf ( L"Online sign IL failed, hr = 0x%x.\n", hr );
+        goto e_Exit;
+    }
+
 
     /*
     hr = GetOfflineSignedIL ( hEnv,
