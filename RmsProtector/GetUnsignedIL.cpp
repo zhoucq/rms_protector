@@ -1,16 +1,23 @@
 #include "stdafx.h"
 #include "functions.h"
 
-HRESULT GetUnsignedIL ( PWSTR wszUserName,
+HRESULT GetUnsignedIL ( PWSTR wszOwner,
+                        PWSTR wszUserName,
                         PWSTR *ppwszGUID,
                         DRMPUBHANDLE *phIssuanceLic )
 {
     HRESULT             hr              = NULL;
     GUID                guid;
     UINT                uiGUIDLength    = 0;
+    DRMPUBHANDLE        hOwner          = NULL;
     DRMPUBHANDLE        hUser           = NULL;
     DRMPUBHANDLE        hRight          = NULL;
 
+    //if ( NULL != wszOwner )
+    //{
+    //    hr = DRMCreateUser ( wszOwner, NULL, L"Windows", &hOwner );
+    //    if ( FAILED ( hr ) ) goto e_Exit;
+    //}
     hr = DRMCreateIssuanceLicense ( NULL,
                                     NULL,
                                     NULL,
@@ -47,6 +54,17 @@ HRESULT GetUnsignedIL ( PWSTR wszUserName,
 
     if ( FAILED ( hr ) ) goto e_Exit;
 
+    /*
+    // 创建Owner right
+    hr = DRMCreateUser ( wszOwner, NULL, L"Windows", &hUser );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
+    hr = DRMCreateRight ( L"Owner", NULL, NULL, 0, NULL, NULL, &hRight );
+    if ( FAILED ( hr ) ) goto e_Exit;
+
+    hr = DRMAddRightWithUser ( *phIssuanceLic, hRight, hUser );
+    if ( FAILED ( hr ) ) goto e_Exit;
+    */
     // 创建User
     hr = DRMCreateUser ( wszUserName, NULL, L"Unspecified", &hUser );
     if ( FAILED ( hr ) ) goto e_Exit;

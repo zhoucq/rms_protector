@@ -55,8 +55,8 @@ int _tmain ( int argc, _TCHAR* argv[] )
     //}
 
 
-    LPWSTR          wszGroupId                      = L"user1@doc.lab"; // 用户ID
-    // LPWSTR          wszGroupId                   = NULL; // 用户ID
+    LPWSTR          wszUserName                     = L"user1@doc.lab"; // 用户ID
+    //LPWSTR          wszUserName                   = NULL; // 用户ID
     HRESULT         hr                              = S_OK;
     DRMHSESSION     hClient                         = NULL; // client session
     PWSTR           wszMachineCertificate           = NULL; // machine cert
@@ -77,7 +77,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
     hr = DRMCreateClientSession ( &StatusCallback,
                                   0,
                                   DRM_DEFAULTGROUPIDTYPE_WINDOWSAUTH,
-                                  wszGroupId,
+                                  wszUserName,
                                   &hClient );
     if ( FAILED ( hr ) )
     {
@@ -187,7 +187,11 @@ int _tmain ( int argc, _TCHAR* argv[] )
     }
 
     // Get the security provider
-    hr = DRMGetSecurityProvider ( 0, &uiSecurityProviderTypeLength, NULL, &uiSecurityProviderPathLength, NULL );
+    hr = DRMGetSecurityProvider ( 0,
+                                  &uiSecurityProviderTypeLength,
+                                  NULL,
+                                  &uiSecurityProviderPathLength,
+                                  NULL );
     if ( FAILED ( hr ) )
     {
         wprintf ( L"\nDRMGetSecurityProvider failed. hr = 0x%x\n", hr );
@@ -236,7 +240,7 @@ int _tmain ( int argc, _TCHAR* argv[] )
         goto e_Exit;
     }
 
-    hr = GetUnsignedIL ( wszGroupId, &pwszGuid, &hIssuanceLicense );
+    hr = GetUnsignedIL ( wszUserName, wszUserName, &pwszGuid, &hIssuanceLicense );
     if ( FAILED ( hr ) ) goto e_Exit;
 
     hr = GetServiceLocation (
@@ -244,15 +248,17 @@ int _tmain ( int argc, _TCHAR* argv[] )
              DRM_SERVICE_TYPE_PUBLISHING,        // Type of service
              DRM_SERVICE_LOCATION_ENTERPRISE,    // Location of service
              &pwszLicensingSrv );                // Service URL
+    if ( FAILED ( hr ) ) goto e_Exit;
     wprintf ( L"Licensing Service URL: %s\n", pwszLicensingSrv );
 
-    hr = GetOnlineSignedIL ( hIssuanceLicense, pwszLicensingSrv , &pwszSignedIL );
+    hr = GetOnlineSignedIL ( &hIssuanceLicense, pwszLicensingSrv , &pwszSignedIL );
     if ( FAILED ( hr ) )
     {
         wprintf ( L"Online sign IL failed, hr = 0x%x.\n", hr );
         goto e_Exit;
     }
 
+    hr = GetOfflineSignedIL ( &hIssuanceLicense, wszClientLicensorCert, &pwszSignedIL );
 
     /*
     hr = GetOfflineSignedIL ( hEnv,
@@ -269,6 +275,14 @@ int _tmain ( int argc, _TCHAR* argv[] )
         goto e_Exit;
     }
     */
+
+    hr = EncryptContent ( hEnv,
+                          hLib,
+                          wszRAC,
+                          pwszGuid,
+                          hIssuanceLicense,
+                          pwszSignedIL,
+                          NULL );
 e_Exit:
     wprintf ( L"Return Code:0x%x", hr );
     return hr;

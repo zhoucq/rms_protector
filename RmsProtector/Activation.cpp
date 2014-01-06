@@ -40,7 +40,7 @@ HRESULT DoMachineActivation ( DRMHSESSION hClient )
     if ( dwWaitResult == DW_WAIT_RESULT )
     {
         wprintf ( L"Do machine activation timed out.\n" );
-        hr = ERROR_TIMEOUT;
+        hr = HRESULT_FROM_WIN32 ( ERROR_TIMEOUT );
         goto e_Exit;
     }
     if ( FAILED ( context.hr ) )
@@ -95,7 +95,7 @@ HRESULT DoUserActivation ( DRMHSESSION hClient )
     dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
     if ( dwWaitResult == DW_WAIT_RESULT )
     {
-        hr = ERROR_TIMEOUT;
+        hr = HRESULT_FROM_WIN32 ( ERROR_TIMEOUT );
         wprintf ( L"Do user activation timed out.\n" );
         goto e_Exit;
     }

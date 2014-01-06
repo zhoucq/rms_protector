@@ -16,14 +16,12 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
                               &wszLicensingSrv );
     if ( FAILED ( hr ) )
     {
-        wprintf ( L"Find service url failed." );
         goto e_Exit;
     }
 
     if ( NULL == ( context.hEvent = CreateEvent ( NULL, FALSE, FALSE, NULL ) ) )
     {
         hr = GetLastHR();
-        wprintf ( L"Create event failed with an unexcepted error: 0x%x", hr );
         goto e_Exit;
     }
 
@@ -42,8 +40,7 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
     dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
     if ( dwWaitResult == DW_WAIT_RESULT )
     {
-        hr = ERROR_TIMEOUT;
-        wprintf ( L"Acquire license timed out.\n" );
+        hr = HRESULT_FROM_WIN32 ( ERROR_TIMEOUT );
         goto e_Exit;
     }
     if ( FAILED ( context.hr ) )

@@ -47,24 +47,38 @@ DoAcquireClientLicensorCertificate ( DRMHSESSION hClient,
                                      PWSTR wszLicensingSvr,
                                      PWSTR *wszClientLicensorCert );
 
-// 首先创建Unsigned IL，添加用户权限后，使用CLC进行离线签署
-HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
-                             DRMHANDLE hLib,
-                             PWSTR pwszUserID,
-                             PWSTR pwszMachineCert,
-                             PWSTR pwszCLC,
-                             PWSTR pwszManifest,
-                             PWSTR *ppwszGUID,
-                             DRMPUBHANDLE *phIssuanceLic,
-                             PWSTR *ppwszSignedIL );
+HRESULT GetOfflineSignedIL_ ( DRMENVHANDLE hEnv,
+                              DRMHANDLE hLib,
+                              PWSTR pwszUserID,
+                              PWSTR pwszMachineCert,
+                              PWSTR pwszCLC,
+                              PWSTR pwszManifest,
+                              PWSTR *ppwszGUID,
+                              DRMPUBHANDLE *phIssuanceLic,
+                              PWSTR *ppwszSignedIL );
 
 // 生成Unsigned IL
-HRESULT GetUnsignedIL ( PWSTR wszUserName,
+HRESULT GetUnsignedIL ( PWSTR wszOwner,
+                        PWSTR wszUserName,
                         PWSTR *ppwszGUID,
                         DRMPUBHANDLE *phIssuanceLic );
 
+// 离线签署IL
+HRESULT GetOfflineSignedIL ( DRMHANDLE *phIssuanceLicense,
+                             PWSTR pwszCLC,
+                             PWSTR *ppwszSignedIL );
+
 // 连线签署IL
-HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
+HRESULT GetOnlineSignedIL ( DRMPUBHANDLE *phIssuanceLic,
                             PWSTR wszLicensingSrv ,
                             PWSTR *pwszSignedIL );
+
+// 文档加密
+HRESULT EncryptContent ( DRMENVHANDLE hEnv,
+                         DRMHANDLE hLib,
+                         PWSTR pwszRAC,
+                         PWSTR pwszGUID,
+                         DRMHANDLE hIssuanceLic,
+                         PWSTR pwszSignedIL,
+                         BYTE** ppbEncrypted );
 #endif

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "functions.h"
 
-HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
+HRESULT GetOnlineSignedIL ( DRMPUBHANDLE *phIssuanceLic,
                             PWSTR wszLicensingSrv,
                             PWSTR *pwszSignedIL )
 {
@@ -20,7 +20,7 @@ HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
     }
 
     hr = DRMGetSignedIssuanceLicense ( NULL,
-                                       hIssuanceLic,
+                                       *phIssuanceLic,
                                        DRM_SIGN_ONLINE | DRM_AUTO_GENERATE_KEY,
                                        NULL,
                                        0,
@@ -34,7 +34,7 @@ HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
     dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
     if ( dwWaitResult == DW_WAIT_RESULT )
     {
-        hr = ERROR_TIMEOUT;
+        hr = HRESULT_FROM_WIN32 ( ERROR_TIMEOUT );
         goto e_Exit;
     }
     if ( FAILED ( context.hr ) )
@@ -43,8 +43,6 @@ HRESULT GetOnlineSignedIL ( DRMPUBHANDLE hIssuanceLic,
         goto e_Exit;
     }
     *pwszSignedIL = context.wszData;
-    wprintf ( L"Online SignedIL: \n%s\n", *pwszSignedIL );
-
 
 e_Exit:
     return hr;
