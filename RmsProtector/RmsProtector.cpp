@@ -243,38 +243,27 @@ int _tmain ( int argc, _TCHAR* argv[] )
     hr = GetUnsignedIL ( wszUserName, wszUserName, &pwszGuid, &hIssuanceLicense );
     if ( FAILED ( hr ) ) goto e_Exit;
 
+
+    // 注释掉的代码使用Online方式签署IL
+    /*
     hr = GetServiceLocation (
              hClient,                            // Client handle
              DRM_SERVICE_TYPE_PUBLISHING,        // Type of service
              DRM_SERVICE_LOCATION_ENTERPRISE,    // Location of service
              &pwszLicensingSrv );                // Service URL
     if ( FAILED ( hr ) ) goto e_Exit;
-    wprintf ( L"Licensing Service URL: %s\n", pwszLicensingSrv );
 
     hr = GetOnlineSignedIL ( &hIssuanceLicense, pwszLicensingSrv , &pwszSignedIL );
     if ( FAILED ( hr ) )
     {
         wprintf ( L"Online sign IL failed, hr = 0x%x.\n", hr );
         goto e_Exit;
-    }
+    }*/
 
-    hr = GetOfflineSignedIL ( &hIssuanceLicense, wszClientLicensorCert, &pwszSignedIL );
-
-    /*
     hr = GetOfflineSignedIL ( hEnv,
-                              hLib,
-                              wszGroupId,
-                              wszMachineCertificate,
-                              wszClientLicensorCert,
-                              wszManifest,
-                              &pwszGuid,
                               &hIssuanceLicense,
+                              wszClientLicensorCert,
                               &pwszSignedIL );
-    if ( FAILED ( hr ) )
-    {
-        goto e_Exit;
-    }
-    */
 
     hr = EncryptContent ( hEnv,
                           hLib,

@@ -64,7 +64,8 @@ HRESULT GetUnsignedIL ( PWSTR wszOwner,
                         DRMPUBHANDLE *phIssuanceLic );
 
 // ÀëÏßÇ©ÊðIL
-HRESULT GetOfflineSignedIL ( DRMHANDLE *phIssuanceLicense,
+HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
+                             DRMHANDLE *phIssuanceLicense,
                              PWSTR pwszCLC,
                              PWSTR *ppwszSignedIL );
 

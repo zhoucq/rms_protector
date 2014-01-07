@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "functions.h"
 
-HRESULT GetOfflineSignedIL ( DRMHANDLE *phIssuanceLicense,
+HRESULT GetOfflineSignedIL ( DRMENVHANDLE hEnv,
+                             DRMHANDLE *phIssuanceLicense,
                              PWSTR pwszCLC,
                              PWSTR *ppwszSignedIL )
 {
@@ -20,7 +21,7 @@ HRESULT GetOfflineSignedIL ( DRMHANDLE *phIssuanceLicense,
         goto e_Exit;
     }
 
-    hr = DRMGetSignedIssuanceLicense ( NULL,
+    hr = DRMGetSignedIssuanceLicense ( hEnv,
                                        *phIssuanceLicense,
                                        DRM_SIGN_OFFLINE | DRM_AUTO_GENERATE_KEY,
                                        NULL,
@@ -31,14 +32,27 @@ HRESULT GetOfflineSignedIL ( DRMHANDLE *phIssuanceLicense,
                                        NULL,
                                        &context );
     if ( FAILED ( hr ) ) goto e_Exit;
+
     dwWaitResult = WaitForSingleObject ( context.hEvent, DW_WAIT_RESULT );
     if ( dwWaitResult == DW_WAIT_RESULT )
     {
         hr = HRESULT_FROM_WIN32 ( ERROR_TIMEOUT );
         goto e_Exit;
     }
+    if ( FAILED ( hr ) )
+    {
+        hr = context.hr;
+        goto e_Exit;
+    }
+    *ppwszSignedIL = context.wszData;
 
 e_Exit:
+    context.wszData = NULL;
+    if ( NULL != context.hEvent )
+    {
+        CloseHandle ( context.hEvent );
+        context.hEvent = NULL;
+    }
     return hr;
 }
 

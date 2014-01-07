@@ -54,9 +54,10 @@ HRESULT GetUnsignedIL ( PWSTR wszOwner,
 
     if ( FAILED ( hr ) ) goto e_Exit;
 
-    /*
+
     // 创建Owner right
-    hr = DRMCreateUser ( wszOwner, NULL, L"Windows", &hUser );
+    // hr = DRMCreateUser ( wszOwner, NULL, L"Internal", &hUser );
+    hr = DRMCreateUser ( wszOwner, L"Owner", L"Internal", &hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
 
     hr = DRMCreateRight ( L"Owner", NULL, NULL, 0, NULL, NULL, &hRight );
@@ -64,7 +65,7 @@ HRESULT GetUnsignedIL ( PWSTR wszOwner,
 
     hr = DRMAddRightWithUser ( *phIssuanceLic, hRight, hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
-    */
+
     // 创建User
     hr = DRMCreateUser ( wszUserName, NULL, L"Unspecified", &hUser );
     if ( FAILED ( hr ) ) goto e_Exit;
